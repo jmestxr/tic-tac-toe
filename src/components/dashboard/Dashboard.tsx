@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { AppPageType } from "../game/utils/enums";
 import "./dashboard.css";
 
@@ -6,15 +7,24 @@ interface DashboardProps {
 }
 
 export const Dashboard = ({ navigateTo }: DashboardProps) => {
+  const dashboardRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    dashboardRef.current?.focus();
+    return () => {
+      dashboardRef.current?.blur();
+    }
+  })
+
   return (
-    <div role="dialog" aria-label="Dashboard">
+    <main ref={dashboardRef} aria-label="Dashboard">
       <header>
         <h1 className="h1">Welcome to Tic Tac Toe</h1>
       </header>
 
       <nav id="dashboard-navigation" aria-label="dashboard-buttons">
         <button
-          onClick={() => navigateTo("GAME")}
+          onClick={() => navigateTo("GAMEROOM")}
           aria-label="Create New Game"
           className="new-game-button game-button"
         >
@@ -43,6 +53,6 @@ export const Dashboard = ({ navigateTo }: DashboardProps) => {
           </h2>
         </button>
       </nav>
-    </div>
+    </main>
   );
 };

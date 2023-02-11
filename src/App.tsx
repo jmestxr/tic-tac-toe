@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { Dashboard } from "./components/dashboard/Dashboard";
-import { Game } from "./components/game/Game";
+import { GameRoom } from "./components/game/GameRoom";
 import { AppPageType } from "./components/game/utils/enums";
 
 const App = () => {
@@ -12,14 +12,14 @@ const App = () => {
   };
 
   return (
-    <div className="app">
+    <div id="app" role="application">
       {page === "DASHBOARD" ? (
         <Dashboard navigateTo={navigateTo} />
-      ) : page === "GAME" ? (
-        <Game navigateTo={navigateTo} />
+      ) : page === "GAMEROOM" ? (
+        <GameRoom navigateTo={navigateTo} />
       ) : null}
     </div>
   );
-}
+};
 
 export default App;

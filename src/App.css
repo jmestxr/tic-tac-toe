@@ -3,15 +3,10 @@
   box-sizing: border-box;
 }
 
-.app {
+#app {
   min-height: 100vh;
   width: 100vw;
   padding: 2rem 5rem;
   background-color: var(--grey);
 }
 
-@media screen and (max-width: 992px) {
-  .app {
-    height: auto;
-  }
-}

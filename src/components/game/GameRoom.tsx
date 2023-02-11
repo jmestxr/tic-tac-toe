@@ -1,18 +1,31 @@
-import { useEffect, useState } from "react";
-import { AppPageType, BoardStateType, PlayerType, SquareStateType } from "./utils/enums";
+import { useEffect, useRef, useState } from "react";
+import {
+  AppPageType,
+  BoardStateType,
+  PlayerType,
+  SquareStateType,
+} from "./utils/enums";
 import { Board } from "./Board";
 import { getEmptyBoardState } from "./utils/utils";
 
-import "./game.css";
+import "./game-room.css";
 
-interface GameProps {
+interface GameRoomProps {
   navigateTo: (appPage: AppPageType) => void;
 }
+export const GameRoom = ({ navigateTo }: GameRoomProps) => {
+  const gameRoomRef = useRef<HTMLElement | null>(null);
 
-export const Game = ({navigateTo}: GameProps) => {
   const [boardState, setBoardState] = useState<BoardStateType>(
     getEmptyBoardState()
   );
+
+  useEffect(() => {
+    gameRoomRef.current?.focus();
+    return () => {
+      gameRoomRef.current?.blur();
+    }
+  })
 
   useEffect(() => {
     getBoardState();
@@ -44,20 +57,35 @@ export const Game = ({navigateTo}: GameProps) => {
   };
 
   return (
-    <div role="dialog" aria-label="Game Room">
-      <h2 className="h2">
-        {getGameState()}
-      </h2>
+    <main ref={gameRoomRef} aria-label="Game Room">
+      <header>
+        <h2 aria-live="assertive" className="h2">{getGameState()}</h2>
+      </header>
       <Board boardState={boardState} updateBoardState={updateBoardState} />
-      <button aria-label="Quit Game" onClick={() => navigateTo("DASHBOARD")} className="quit-game-button">
-        <p aria-hidden="true" className="p1 quit-game-button-label">Quit Game</p>
-        <img
-          aria-hidden="true"
-          src={require("../../assets/quit-game-icon.png")}
-          className="quit-game-icon"
-        />
-      </button>
-    </div>
+      <QuitGameButton navigateTo={navigateTo} />
+    </main>
+  );
+};
+
+interface QuitGameButtonProps {
+  navigateTo: (appPage: AppPageType) => void;
+}
+const QuitGameButton = ({ navigateTo }: QuitGameButtonProps) => {
+  return (
+    <button
+      aria-label="Quit Game"
+      onClick={() => navigateTo("DASHBOARD")}
+      className="quit-game-button"
+    >
+      <p aria-hidden="true" className="p1 quit-game-button-label">
+        Quit Game
+      </p>
+      <img
+        aria-hidden="true"
+        src={require("../../assets/quit-game-icon.png")}
+        className="quit-game-icon"
+      />
+    </button>
   );
 };
 

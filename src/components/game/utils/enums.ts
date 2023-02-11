@@ -1,6 +1,6 @@
 enum AppPage {
   DASHBOARD,
-  GAME
+  GAMEROOM
 }
 
 export enum Player {
