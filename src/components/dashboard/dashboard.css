@@ -1,0 +1,42 @@
+.game-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.game-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  width: 50%;
+  border: 5px solid var(--teal);
+  cursor: pointer;
+}
+
+.new-game-button {
+  color: var(--grey);
+  background-color: var(--teal);
+}
+
+.join-game-button {
+  color: var(--teal);
+  background-color: var(--grey);
+}
+
+.game-icon {
+  height: 15rem;
+  width: auto;
+}
+
+@media screen and (max-width: 992px) {
+  .game-container {
+    flex-direction: column;
+  }
+  .game-button {
+    flex-direction: column;
+  }
+  .game-button {
+    min-width: 400px;
+  }
+}

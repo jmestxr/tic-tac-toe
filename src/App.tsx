@@ -1,10 +1,10 @@
-import React from 'react';
-import './App.css';
+import "./App.css";
+import { Dashboard } from "./components/dashboard/Dashboard";
 
 function App() {
   return (
-    <div>
-      <h1>Hello</h1>
+    <div className="app">
+      <Dashboard />
     </div>
   );
 }
