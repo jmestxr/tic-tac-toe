@@ -1,0 +1,31 @@
+.board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.square {
+    height: 150px;
+    width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.3rem;
+    background-color: var(--teal);
+    border: 5px solid var(--teal);
+    cursor: pointer;
+}
+.square:hover {
+    opacity: 0.8;
+}
+
+.square-label {
+    color: var(--grey);
+    font-size: 6rem;
+    font-weight: var(--medium);
+}

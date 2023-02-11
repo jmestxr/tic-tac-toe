@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap");
 
 :root {
   /* ========================== COLOR THEME ========================== */
   --black: #303841;
-  --grey: #EEEEEE;
-  --orange: #FF5722;
-  --teal: #00ADB5;
+  --grey: #eeeeee;
+  --orange: #ff5722;
+  --teal: #00adb5;
 
   /* ========================== TYPOGRAPHY ========================== */
   --default-font-size: 12px;
@@ -32,9 +32,9 @@ body {
   line-height: var(--line-height);
 }
 
-
 .h1,
 .h2 {
+  line-height: 5rem;
   font-weight: var(--bold);
 }
 
@@ -44,4 +44,8 @@ body {
 
 .h2 {
   font-size: 3.5rem;
+}
+
+.p1 {
+  font-size: 1.5rem;
 }

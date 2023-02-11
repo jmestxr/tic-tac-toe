@@ -1,4 +1,4 @@
-.game-container {
+#dashboard-navigation {
   display: flex;
   flex-direction: row;
 }
@@ -30,7 +30,7 @@
 }
 
 @media screen and (max-width: 992px) {
-  .game-container {
+  #dashboard-navigation {
     flex-direction: column;
   }
   .game-button {

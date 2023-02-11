@@ -1,0 +1,42 @@
+.quit-game-button {
+    position: sticky;
+    bottom: 5%;
+    left: 100%;
+    border: none;
+    height: 85px;
+    width: 85px;
+    border-radius: 50%;
+    background-color: var(--orange);
+    cursor: pointer;
+}
+.quit-game-button:hover {
+    opacity: 0.8
+}
+.quit-game-button:hover .quit-game-icon,
+.quit-game-button:focus .quit-game-icon {
+    visibility: hidden;
+}
+.quit-game-button:hover .quit-game-button-label,
+.quit-game-button:focus .quit-game-button-label {
+    visibility: visible;
+}
+
+.quit-game-icon {
+    height: 3rem;
+    width: auto;
+}
+
+.quit-game-button-label {
+    position: absolute;
+    bottom: 5%;
+    visibility: hidden;
+    color: var(--grey);
+    font-weight: var(--bold);
+}
+
+@media screen and (max-width: 992px) {
+    .quit-game-button {
+        margin-top: 2rem;
+    }
+  }
+  
