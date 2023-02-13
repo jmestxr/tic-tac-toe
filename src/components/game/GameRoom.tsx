@@ -25,7 +25,11 @@ interface GameRoomProps {
   playerId: number;
   gameId: number;
 }
-export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageProps) => {
+export const GameRoom = ({
+  playerId,
+  gameId,
+  navigateTo,
+}: GameRoomProps & PageProps) => {
   const gameRoomRef = useRef<HTMLElement | null>(null);
 
   const [isGameSessionExists, setIsGameSessionExists] = useState(true);
@@ -101,14 +105,10 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageP
     while (!isEnd) {
       const isGameSessionExists = await checkIsGameExists(gameId);
       setIsGameSessionExists(isGameSessionExists);
-      if (!isGameSessionExists) return false;
+      if (!isGameSessionExists) return (isEnd = true);
 
       const isWaitingMove = await checkIsWaitingMove(gameId, playerId);
       setIsWaitingMove(isWaitingMove);
-
-      /* Update the last move on the board. */
-      const lastMove = await getLastMove(gameId);
-      if (lastMove) setLastMove(lastMove);
 
       /* Update the board state. */
       let latestBoardState = await getBoardState(gameId);
@@ -119,9 +119,12 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageP
       setGameResult(gameResult);
       isEnd = gameResult !== "U";
       if (isEnd) {
+        /* Update the last move on the board. */
+        const lastMove = await getLastMove(gameId);
+        if (lastMove) setLastMove(lastMove);
+
         setIsWaitingGame(false);
         setIsWaitingMove(false);
-        await deleteGame(gameId);
       }
     }
 
@@ -133,12 +136,10 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageP
   };
 
   const getGameAnnouncement = () => {
-    if (!isGameSessionExists) {
-      return `Oops! Player ${opponentId} has left! Please exit and join another game.`;
-    } else if (!isGameEnd()) {
-      if (isWaitingGame) {
+    if (!isGameEnd()) {
+      if (isWaitingGame && isGameSessionExists) {
         return `Welcome to Game ${gameId}. Waiting for a player...`;
-      } else if (isWaitingMove) {
+      } else if (isWaitingMove && isGameSessionExists) {
         return `${
           lastMove
             ? `You have moved on ${
@@ -146,7 +147,7 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageP
               } square. `
             : ""
         }Opponent's turn!`;
-      } else {
+      } else if (isGameSessionExists) {
         return `${
           lastMove
             ? `Player ${opponentId} moves on ${
@@ -154,6 +155,8 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageP
               } square. `
             : ""
         }Your turn!`;
+      } else {
+        return `Oops! Player ${opponentId} has left! Please exit and join another game.`;
       }
     } else if (gameResult === "D") {
       return "It's a draw!";
@@ -174,7 +177,12 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageP
   };
 
   return (
-    <main id="game-room" ref={gameRoomRef} aria-label="Game Room" aria-live="assertive">
+    <main
+      id="game-room"
+      ref={gameRoomRef}
+      aria-label="Game Room"
+      aria-live="assertive"
+    >
       <header>
         <h2
           id="game-announcer"
