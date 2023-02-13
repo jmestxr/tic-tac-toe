@@ -1,6 +1,7 @@
 export enum AppPage {
+  ONBOARDING,
   DASHBOARD,
-  GAMEROOM
+  GAMEROOM,
 }
 
 export enum Player {
@@ -15,8 +16,8 @@ export enum SquareState {
 }
 
 export enum GameResult {
-  "X", /* Player X wins */
-  "O", /* Player O wins */
-  "D", /* Draw */
-  "U" /* Unknown; game has not ended yet */
+  "X" /* Player X wins */,
+  "O" /* Player O wins */,
+  "D" /* Draw */,
+  "U" /* Unknown; game has not ended yet */,
 }

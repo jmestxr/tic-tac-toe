@@ -34,6 +34,8 @@
     font-weight: var(--bold);
 }
 
+
+/* ============================= RESPONSIVENESS ============================= */
 @media screen and (max-width: 992px) {
     .quit-game-button {
         margin-top: 2rem;

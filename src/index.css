@@ -33,7 +33,8 @@ body {
 }
 
 .h1,
-.h2 {
+.h2,
+.h3 {
   line-height: 5rem;
   font-weight: var(--bold);
 }
@@ -44,6 +45,10 @@ body {
 
 .h2 {
   font-size: 3.5rem;
+}
+
+.h3 {
+  font-size: 2rem;
 }
 
 .p1 {

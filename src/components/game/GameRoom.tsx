@@ -4,6 +4,7 @@ import {
   BoardStateType,
   ButtonProps,
   GameResultType,
+  PageProps,
 } from "./utils/types";
 import { Board } from "./Board";
 import {
@@ -23,9 +24,8 @@ import "./game-room.css";
 interface GameRoomProps {
   playerId: number;
   gameId: number;
-  navigateTo: (appPage: AppPageType) => void;
 }
-export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
+export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageProps) => {
   const gameRoomRef = useRef<HTMLElement | null>(null);
 
   const [isGameSessionExists, setIsGameSessionExists] = useState(true);
@@ -79,9 +79,9 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
         const opponentId = playerId === player1 ? player2 : player1;
         setOpponentId(opponentId);
 
-        const announcer = document.getElementById("game-announcer");
-        if (announcer)
-          announcer.innerHTML = `Game begins! You are playing against Player ${opponentId}.`;
+        announceMessage(
+          `Game begins! You are playing against Player ${opponentId}.`
+        );
       }
 
       const isGameSessionExists = await checkIsGameExists(gameId);
@@ -137,7 +137,7 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
       return `Oops! Player ${opponentId} has left! Please exit and join another game.`;
     } else if (!isGameEnd()) {
       if (isWaitingGame) {
-        return "Waiting for a player...";
+        return `Welcome to Game ${gameId}. Waiting for a player...`;
       } else if (isWaitingMove) {
         return `${
           lastMove
@@ -163,13 +163,18 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
     }
   };
 
+  const announceMessage = (message: string) => {
+    const announcer = document.getElementById("game-announcer");
+    if (announcer) announcer.innerHTML = message;
+  };
+
   const handleQuitGame = async () => {
     await deleteGame(gameId);
     navigateTo("DASHBOARD");
-  }
+  };
 
   return (
-    <main ref={gameRoomRef} aria-label="Game Room">
+    <main id="game-room" ref={gameRoomRef} aria-label="Game Room">
       <header>
         <h2
           id="game-announcer"

@@ -1,0 +1,28 @@
+#onboarding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#logo {
+  height: 25rem;
+  width: auto;
+}
+
+#start-button {
+  margin-top: 2rem;
+  padding: 0.5rem 2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  color: var(--grey);
+  background-color: var(--orange);
+}
+#start-button:hover {
+  opacity: 0.8;
+}
+
+#start-button-label {
+  margin: 0;
+}

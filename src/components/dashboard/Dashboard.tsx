@@ -1,18 +1,17 @@
 import { useEffect, useRef } from "react";
-import { AppPageType, ButtonProps } from "../game/utils/types";
-import { joinGame } from "../game/utils/utils";
+import { ButtonProps, PageProps } from "../game/utils/types";
+import { deletePlayer, joinGame } from "../game/utils/utils";
 import "./dashboard.css";
 
 interface DashboardProps {
-  navigateTo: (appPage: AppPageType) => void;
   playerId: number;
   setGameId: React.Dispatch<React.SetStateAction<number>>;
 }
 export const Dashboard = ({
-  navigateTo,
   playerId,
   setGameId,
-}: DashboardProps) => {
+  navigateTo,
+}: DashboardProps & PageProps) => {
   const dashboardRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -28,16 +27,24 @@ export const Dashboard = ({
     navigateTo("GAMEROOM");
   };
 
+  const handleEndSession = async () => {
+    await deletePlayer(playerId);
+    navigateTo("ONBOARDING");
+  };
+
   return (
-    <main ref={dashboardRef} aria-label="Dashboard">
+    <main id="dashboard" ref={dashboardRef} aria-label="Dashboard">
       <header>
         <h1 className="h1">Welcome to Tic Tac Toe, Player {playerId}!</h1>
       </header>
 
-      <nav id="dashboard-navigation" aria-label="dashboard-buttons">
+      <nav id="dashboard-nav" aria-label="dashboard-buttons">
         <PlayButton handleOnClick={handleJoinGame} />
         <HistoryButton handleOnClick={() => {}} />
       </nav>
+      <footer id="dashboard-footer">
+        <ExitButton handleOnClick={handleEndSession} />
+      </footer>
     </main>
   );
 };
@@ -45,13 +52,14 @@ export const Dashboard = ({
 const PlayButton = ({ handleOnClick }: ButtonProps) => {
   return (
     <button
+      id="play-game-button"
       onClick={handleOnClick}
       aria-label="Play Game"
-      className="play-game-button game-button"
+      className="game-button"
     >
       <img
+        id="game-icon"
         aria-hidden="true"
-        className="game-icon"
         src={require("../../assets/play-game-icon.png")}
         alt="Play Game Icon"
       />
@@ -64,16 +72,30 @@ const PlayButton = ({ handleOnClick }: ButtonProps) => {
 
 const HistoryButton = ({ handleOnClick }: ButtonProps) => {
   return (
-    <button aria-label="View History" className="history-button game-button">
+    <button
+      id="history-button"
+      aria-label="View History"
+      className="game-button"
+    >
       <img
+        id="game-icon"
         aria-hidden="true"
-        className="game-icon"
         src={require("../../assets/history-icon.png")}
         alt="View History Icon"
       />
       <h2 aria-hidden="true" className="h2">
         View History
       </h2>
+    </button>
+  );
+};
+
+const ExitButton = ({ handleOnClick }: ButtonProps) => {
+  return (
+    <button id="exit-button" aria-label="Exit Now" onClick={handleOnClick}>
+      <h3 id="exit-button-label" aria-hidden="true" className="h3">
+        Exit Now
+      </h3>
     </button>
   );
 };

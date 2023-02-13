@@ -1,4 +1,5 @@
-#dashboard-navigation {
+/* ============================= DASHBOARD NAVIGATION ============================= */
+#dashboard-nav {
   display: flex;
   flex-direction: row;
 }
@@ -13,24 +14,58 @@
   border: 5px solid var(--teal);
   cursor: pointer;
 }
+.game-button:hover {
+  opacity: 0.8;
+}
 
-.play-game-button {
+#play-game-button {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
   color: var(--grey);
   background-color: var(--teal);
 }
 
-.history-button {
+#history-button {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
   color: var(--teal);
   background-color: var(--grey);
 }
 
-.game-icon {
+#game-icon {
   height: 15rem;
   width: auto;
 }
 
+/* ============================= DASHBOARD FOOTER ============================= */
+#dashboard-footer {
+  margin-top: 15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#exit-button {
+  margin-top: 2rem;
+  padding: 0.5rem 2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  color: var(--grey);
+  background-color: var(--orange);
+}
+#exit-button:hover {
+  opacity: 0.8;
+}
+
+#exit-button-label {
+  margin: 0;
+}
+
+
+/* ============================= RESPONSIVENESS ============================= */
 @media screen and (max-width: 992px) {
-  #dashboard-navigation {
+  #dashboard-nav {
     flex-direction: column;
   }
   .game-button {

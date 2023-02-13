@@ -4,37 +4,18 @@ import { GameRoom } from "./components/game/GameRoom";
 import { AppPageType } from "./components/game/utils/types";
 import { createPlayer, deletePlayer } from "./components/game/utils/utils";
 import "./App.css";
+import { OnBoarding } from "./components/onboarding/OnBoarding";
 
 const App = () => {
-  const [page, setPage] = useState<AppPageType>("DASHBOARD");
+  const [page, setPage] = useState<AppPageType>("ONBOARDING");
 
   const [playerId, setPlayerId] = useState(0);
 
   const [gameId, setGameId] = useState(0);
 
   useEffect(() => {
-    createSession();
+    // createSession();
   }, []);
-
-  /* End current session on refresh */
-  window.addEventListener("beforeunload", () => {
-    endSession();
-    return "Ended current session.";
-  });
-  /* End current session on window close */
-  window.addEventListener("unload", () => {
-    endSession();
-    return "Ended current session.";
-  });
-
-  const createSession = async () => {
-    const newPlayerId = await createPlayer();
-    if (newPlayerId) setPlayerId(newPlayerId);
-  };
-
-  const endSession = async () => {
-    await deletePlayer(playerId);
-  };
 
   const navigateTo = (newPage: AppPageType) => {
     setPage(newPage);
@@ -42,7 +23,9 @@ const App = () => {
 
   return (
     <div aria-live="assertive" id="app" role="application">
-      {page === "DASHBOARD" ? (
+      {page === "ONBOARDING" ? (
+        <OnBoarding setPlayerId={setPlayerId} navigateTo={navigateTo} />
+      ) : page === "DASHBOARD" ? (
         <Dashboard
           navigateTo={navigateTo}
           playerId={playerId}

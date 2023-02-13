@@ -10,6 +10,10 @@ export type BoardStateType = (keyof typeof SquareState)[][];
 
 export type GameResultType = (keyof typeof GameResult);
 
+export interface PageProps {
+    navigateTo: (appPage: AppPageType) => void;
+}
+
 export interface ButtonProps {
     handleOnClick: () => void;
 }
