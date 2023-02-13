@@ -41,7 +41,7 @@ const App = () => {
   };
 
   return (
-    <div id="app" role="application">
+    <div aria-live="assertive" id="app" role="application">
       {page === "DASHBOARD" ? (
         <Dashboard
           navigateTo={navigateTo}
