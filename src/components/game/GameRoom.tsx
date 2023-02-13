@@ -15,9 +15,6 @@ import {
   getEmptyBoardState,
   getLastMove,
   getPlayers,
-  isGameExists,
-  isWaitingGame,
-  isWaitingMove,
   SQUARE_POSITIONS,
 } from "./utils/utils";
 
@@ -136,7 +133,7 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
   };
 
   const getGameAnnouncement = () => {
-    if (!isGameExists) {
+    if (!isGameSessionExists) {
       return `Oops! Player ${opponentId} has left! Please exit and join another game.`;
     } else if (!isGameEnd()) {
       if (isWaitingGame) {
@@ -187,7 +184,7 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
         playerId={playerId}
         gameId={gameId}
         boardState={boardState}
-        isDisabled={isWaitingGame || isWaitingMove}
+        isDisabled={isWaitingGame || isWaitingMove || !isGameSessionExists}
         isFinished={gameResult !== "U"}
       />
       <QuitGameButton handleOnClick={handleQuitGame} />
