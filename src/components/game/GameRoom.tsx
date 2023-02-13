@@ -183,7 +183,7 @@ export const GameRoom = ({
       aria-label="Game Room"
       aria-live="assertive"
     >
-      <header>
+      <header aria-atomic="true" aria-live="assertive">
         <h2
           id="game-announcer"
           role="alert"
