@@ -31,6 +31,37 @@ export const getBoardState = async (gameId: number) => {
   });
 };
 
+export const checkIsGameExists = async (gameId: number) => {
+  const isGameSessionExists = await isGameExists(gameId);
+  if (
+    isGameSessionExists !== undefined &&
+    isGameSessionExists !== null
+  ) {
+    return isGameSessionExists;
+  }
+  return false;
+};
+
+export const checkIsWaitingGame = async (gameId: number) => {
+  const isWaiting = await isWaitingGame(gameId);
+  if (isWaiting !== null && isWaiting !== undefined) {
+    return isWaiting;
+  }
+  return true;
+}
+
+export const checkIsWaitingMove = async (gameId: number, playerId: number) => {
+  const isWaiting = await isWaitingMove(
+    gameId,
+    playerId
+  );
+  if (isWaiting !== null && isWaiting !== undefined) {
+    return isWaiting;
+  }
+  return true;
+}
+
+
 /* ==================================== DATABASE CALLS ==================================== */
 export const createPlayer = async () => {
   try {
@@ -38,6 +69,17 @@ export const createPlayer = async () => {
     return data;
   } catch (error) {
     console.log("Error creating player!");
+  }
+};
+
+export const deletePlayer = async (playerId: number) => {
+  try {
+    const { data, error } = await supabase.rpc("delete_player", {
+      pid: playerId,
+    });
+    return data;
+  } catch (error) {
+    console.log("Error deleting player!");
   }
 };
 
@@ -72,6 +114,17 @@ export const getPlayers = async (gameId: number) => {
   }
 };
 
+export const isGameExists = async (gameId: number) => {
+  try {
+    const { data, error } = await supabase.rpc("is_game_exists", {
+      gid: gameId,
+    });
+    return data;
+  } catch (error) {
+    console.log("Error checking if game exists!");
+  }
+};
+
 export const isWaitingGame = async (gameId: number) => {
   try {
     const { data, error } = await supabase.rpc("is_waiting_game", {
@@ -79,7 +132,7 @@ export const isWaitingGame = async (gameId: number) => {
     });
     return data;
   } catch (error) {
-    console.log("Error encountered when executing isWaitingMove");
+    console.log("Error checking if waiting game!");
   }
 };
 
@@ -91,7 +144,7 @@ export const isWaitingMove = async (gameId: number, playerId: number) => {
     });
     return data;
   } catch (error) {
-    console.log("Error encountered when executing isWaitingMove");
+    console.log("Error checking if waiting move!");
   }
 };
 

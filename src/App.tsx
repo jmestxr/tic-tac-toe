@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Dashboard } from "./components/dashboard/Dashboard";
 import { GameRoom } from "./components/game/GameRoom";
 import { AppPageType } from "./components/game/utils/types";
-import { createPlayer } from "./components/game/utils/utils";
+import { createPlayer, deletePlayer } from "./components/game/utils/utils";
 import "./App.css";
 
 const App = () => {
@@ -16,9 +16,23 @@ const App = () => {
     createSession();
   }, []);
 
+  /* End current session on refresh */
+  window.addEventListener("beforeunload", () => {
+    endSession();
+  });
+  /* End current session on window close */
+  window.addEventListener("unload", () => {
+    endSession();
+  });
+
   const createSession = async () => {
     const newPlayerId = await createPlayer();
     if (newPlayerId) setPlayerId(newPlayerId);
+  };
+
+  const endSession = async () => {
+    await deletePlayer(playerId);
+    setPlayerId(0);
   };
 
   const navigateTo = (newPage: AppPageType) => {

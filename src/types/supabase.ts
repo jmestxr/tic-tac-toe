@@ -34,21 +34,21 @@ export interface Database {
           col_position: number
           created_at: string | null
           game_id: number
-          player_id: number | null
+          player_id: number
           row_position: number
         }
         Insert: {
           col_position: number
           created_at?: string | null
           game_id?: number
-          player_id?: number | null
+          player_id: number
           row_position: number
         }
         Update: {
           col_position?: number
           created_at?: string | null
           game_id?: number
-          player_id?: number | null
+          player_id?: number
           row_position?: number
         }
       }
@@ -64,23 +64,6 @@ export interface Database {
         Update: {
           created_at?: string | null
           player_id?: number
-        }
-      }
-      test: {
-        Row: {
-          created_at: string | null
-          id: number
-          name: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          name?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          name?: string | null
         }
       }
     }
@@ -104,6 +87,12 @@ export interface Database {
         }
         Returns: undefined
       }
+      delete_player: {
+        Args: {
+          pid: number
+        }
+        Returns: undefined
+      }
       get_last_move: {
         Args: {
           gid: number
@@ -124,6 +113,12 @@ export interface Database {
           gid: number
         }
         Returns: Record<string, unknown>
+      }
+      is_game_exists: {
+        Args: {
+          gid: number
+        }
+        Returns: boolean
       }
       is_waiting_game: {
         Args: {

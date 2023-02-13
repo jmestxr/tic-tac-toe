@@ -7,11 +7,15 @@ import {
 } from "./utils/types";
 import { Board } from "./Board";
 import {
+  checkIsGameExists,
+  checkIsWaitingGame,
+  checkIsWaitingMove,
   deleteGame,
   getBoardState,
   getEmptyBoardState,
   getLastMove,
   getPlayers,
+  isGameExists,
   isWaitingGame,
   isWaitingMove,
   SQUARE_POSITIONS,
@@ -27,11 +31,13 @@ interface GameRoomProps {
 export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
   const gameRoomRef = useRef<HTMLElement | null>(null);
 
+  const [isGameSessionExists, setIsGameSessionExists] = useState(true);
+
   const [opponentId, setOpponentId] = useState(0);
 
-  const [waitingGame, setWaitingGame] = useState(true);
+  const [isWaitingGame, setIsWaitingGame] = useState(true);
 
-  const [waitingMove, setWaitingMove] = useState(true);
+  const [isWaitingMove, setIsWaitingMove] = useState(true);
 
   const [lastMove, setLastMove] = useState<Record<string, number> | null>(null);
 
@@ -49,64 +55,80 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
   });
 
   useEffect(() => {
-    waitGame().then(() =>
-      setTimeout(() => {
-        setWaitingGame(false);
-        startGame();
-      }, 2000)
-    );
+    waitGame().then((waitingResult) => {
+      if (waitingResult) {
+        setTimeout(() => {
+          setIsWaitingGame(false);
+          startGame();
+        }, 2000);
+      }
+    });
   }, []);
 
+  /**
+   * Waits for an opponent to enter the game room to start.
+   * @returns true if a new player has entered the game room. false if an existing player in the room
+   *      that arrived before this player has left prematurely.
+   */
   const waitGame = async () => {
-    let waiting = true;
-    while (waiting) {
-      const isWaiting = await isWaitingGame(gameId);
-      if (isWaiting !== null && isWaiting !== undefined) {
-        waiting = isWaiting;
+    let isWaiting = true;
+    while (isWaiting) {
+      isWaiting = await checkIsWaitingGame(gameId);
+
+      if (!isWaiting) {
+        const players = await getPlayers(gameId);
+        const player1 = players?.player1_id as number;
+        const player2 = players?.player2_id as number;
+        const opponentId = playerId === player1 ? player2 : player1;
+        setOpponentId(opponentId);
+
+        const announcer = document.getElementById("game-announcer");
+        if (announcer)
+          announcer.innerHTML = `Game begins! You are playing against Player ${opponentId}.`;
       }
+
+      const isGameSessionExists = await checkIsGameExists(gameId);
+      setIsGameSessionExists(isGameSessionExists);
+      if (!isGameSessionExists) return false;
     }
-
-    const players = await getPlayers(gameId);
-    const player1 = players?.player1_id as number;
-    const player2 = players?.player2_id as number;
-    const opponentId = playerId === player1 ? player2 : player1;
-    setOpponentId(opponentId);
-
-    const announcer = document.getElementById("game-announcer");
-    if (announcer)
-      announcer.innerHTML = `Game begins! You are playing against Player ${opponentId}.`;
+    return true;
   };
 
+  /**
+   * Starts the tic-tac-toe gameplay with the opponent player.
+   * @returns true if the game ends successfully (win/lose/draw); false if otherwise.
+   */
   const startGame = async () => {
     let isEnd = false;
 
     while (!isEnd) {
-      const isWaiting = await isWaitingMove(
-        gameId,
-        playerId
-      ); /* Determine if it's the other player's turn. */
-      if (isWaiting !== null && isWaiting !== undefined) {
-        setWaitingMove(isWaiting);
+      const isGameSessionExists = await checkIsGameExists(gameId);
+      setIsGameSessionExists(isGameSessionExists);
+      if (!isGameSessionExists) return false;
 
-        /* Update the last move on the board. */
-        const lastMove = await getLastMove(gameId);
-        if (lastMove) setLastMove(lastMove);
+      const isWaitingMove = await checkIsWaitingMove(gameId, playerId);
+      setIsWaitingMove(isWaitingMove);
 
-        /* Update the board state. */
-        let latestBoardState = await getBoardState(gameId);
-        setBoardState(latestBoardState);
+      /* Update the last move on the board. */
+      const lastMove = await getLastMove(gameId);
+      if (lastMove) setLastMove(lastMove);
 
-        /* Update the game result. */
-        const gameResult = getGameResult(latestBoardState);
-        setGameResult(gameResult);
-        isEnd = gameResult !== "U";
-        if (isEnd) {
-          setWaitingGame(false);
-          setWaitingMove(false);
-          await deleteGame(gameId);
-        }
+      /* Update the board state. */
+      let latestBoardState = await getBoardState(gameId);
+      setBoardState(latestBoardState);
+
+      /* Update the game result. */
+      const gameResult = getGameResult(latestBoardState);
+      setGameResult(gameResult);
+      isEnd = gameResult !== "U";
+      if (isEnd) {
+        setIsWaitingGame(false);
+        setIsWaitingMove(false);
+        await deleteGame(gameId);
       }
     }
+
+    return true;
   };
 
   const isGameEnd = () => {
@@ -114,10 +136,12 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
   };
 
   const getGameAnnouncement = () => {
-    if (!isGameEnd()) {
-      if (waitingGame) {
+    if (!isGameExists) {
+      return `Oops! Player ${opponentId} has left! Please exit and join another game.`;
+    } else if (!isGameEnd()) {
+      if (isWaitingGame) {
         return "Waiting for a player...";
-      } else if (waitingMove) {
+      } else if (isWaitingMove) {
         return `${
           lastMove
             ? `You have moved on ${
@@ -158,12 +182,12 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
         playerId={playerId}
         gameId={gameId}
         boardState={boardState}
-        isDisabled={waitingGame || waitingMove}
+        isDisabled={isWaitingGame || isWaitingMove}
         isFinished={gameResult !== "U"}
       />
-      {isGameEnd() && (
-        <QuitGameButton handleOnClick={() => navigateTo("DASHBOARD")} />
-      )}
+      {/* {isGameEnd() && ( */}
+      <QuitGameButton handleOnClick={() => navigateTo("DASHBOARD")} />
+      {/* )} */}
     </main>
   );
 };
