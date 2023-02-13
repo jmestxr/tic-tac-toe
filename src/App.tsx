@@ -19,10 +19,12 @@ const App = () => {
   /* End current session on refresh */
   window.addEventListener("beforeunload", () => {
     endSession();
+    return "Ended current session.";
   });
   /* End current session on window close */
   window.addEventListener("unload", () => {
     endSession();
+    return "Ended current session.";
   });
 
   const createSession = async () => {
@@ -32,7 +34,6 @@ const App = () => {
 
   const endSession = async () => {
     await deletePlayer(playerId);
-    setPlayerId(0);
   };
 
   const navigateTo = (newPage: AppPageType) => {

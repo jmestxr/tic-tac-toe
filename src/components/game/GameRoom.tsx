@@ -166,6 +166,11 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
     }
   };
 
+  const handleQuitGame = async () => {
+    await deleteGame(gameId);
+    navigateTo("DASHBOARD");
+  }
+
   return (
     <main ref={gameRoomRef} aria-label="Game Room">
       <header>
@@ -185,9 +190,7 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
         isDisabled={isWaitingGame || isWaitingMove}
         isFinished={gameResult !== "U"}
       />
-      {/* {isGameEnd() && ( */}
-      <QuitGameButton handleOnClick={() => navigateTo("DASHBOARD")} />
-      {/* )} */}
+      <QuitGameButton handleOnClick={handleQuitGame} />
     </main>
   );
 };
