@@ -174,7 +174,7 @@ export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps & PageP
   };
 
   return (
-    <main id="game-room" ref={gameRoomRef} aria-label="Game Room">
+    <main id="game-room" ref={gameRoomRef} aria-label="Game Room" aria-live="assertive">
       <header>
         <h2
           id="game-announcer"

@@ -20,7 +20,7 @@ export const OnBoarding = ({
   };
 
   return (
-    <main id="onboarding" ref={onBoardingRef} aria-label="OnBoarding">
+    <main id="onboarding" ref={onBoardingRef} aria-label="OnBoarding" aria-live="assertive">
       <Logo />
       <StartButton handleOnClick={handleStartSession} />
     </main>
