@@ -2,19 +2,40 @@ import { useEffect, useRef, useState } from "react";
 import {
   AppPageType,
   BoardStateType,
-  PlayerType,
-  SquareStateType,
-} from "./utils/enums";
+  ButtonProps,
+  GameResultType,
+} from "./utils/types";
 import { Board } from "./Board";
-import { getEmptyBoardState } from "./utils/utils";
+import {
+  deleteGame,
+  getBoardState,
+  getEmptyBoardState,
+  getLastMove,
+  getPlayers,
+  isWaitingGame,
+  isWaitingMove,
+  SQUARE_POSITIONS,
+} from "./utils/utils";
 
 import "./game-room.css";
 
 interface GameRoomProps {
+  playerId: number;
+  gameId: number;
   navigateTo: (appPage: AppPageType) => void;
 }
-export const GameRoom = ({ navigateTo }: GameRoomProps) => {
+export const GameRoom = ({ playerId, gameId, navigateTo }: GameRoomProps) => {
   const gameRoomRef = useRef<HTMLElement | null>(null);
+
+  const [opponentId, setOpponentId] = useState(0);
+
+  const [waitingGame, setWaitingGame] = useState(true);
+
+  const [waitingMove, setWaitingMove] = useState(true);
+
+  const [lastMove, setLastMove] = useState<Record<string, number> | null>(null);
+
+  const [gameResult, setGameResult] = useState<GameResultType>("U");
 
   const [boardState, setBoardState] = useState<BoardStateType>(
     getEmptyBoardState()
@@ -24,57 +45,134 @@ export const GameRoom = ({ navigateTo }: GameRoomProps) => {
     gameRoomRef.current?.focus();
     return () => {
       gameRoomRef.current?.blur();
-    }
-  })
+    };
+  });
 
   useEffect(() => {
-    getBoardState();
+    waitGame().then(() =>
+      setTimeout(() => {
+        setWaitingGame(false);
+        startGame();
+      }, 2000)
+    );
   }, []);
 
-  const getBoardState = () => {
-    /* Get and set most updated board state from database */
+  const waitGame = async () => {
+    let waiting = true;
+    while (waiting) {
+      const isWaiting = await isWaitingGame(gameId);
+      if (isWaiting !== null && isWaiting !== undefined) {
+        waiting = isWaiting;
+      }
+    }
+
+    const players = await getPlayers(gameId);
+    const player1 = players?.player1_id as number;
+    const player2 = players?.player2_id as number;
+    const opponentId = playerId === player1 ? player2 : player1;
+    setOpponentId(opponentId);
+
+    const announcer = document.getElementById("game-announcer");
+    if (announcer)
+      announcer.innerHTML = `Game begins! You are playing against Player ${opponentId}.`;
   };
 
-  const updateBoardState = (currPlayer: PlayerType, position: number[]) => {
-    const [x, y] = position;
+  const startGame = async () => {
+    let isEnd = false;
 
-    setBoardState((prevState) => {
-      const newState = prevState.slice();
-      newState[x][y] = currPlayer;
-      return newState;
-    });
+    while (!isEnd) {
+      const isWaiting = await isWaitingMove(
+        gameId,
+        playerId
+      ); /* Determine if it's the other player's turn. */
+      if (isWaiting !== null && isWaiting !== undefined) {
+        setWaitingMove(isWaiting);
+
+        /* Update the last move on the board. */
+        const lastMove = await getLastMove(gameId);
+        if (lastMove) setLastMove(lastMove);
+
+        /* Update the board state. */
+        let latestBoardState = await getBoardState(gameId);
+        setBoardState(latestBoardState);
+
+        /* Update the game result. */
+        const gameResult = getGameResult(latestBoardState);
+        setGameResult(gameResult);
+        isEnd = gameResult !== "U";
+        if (isEnd) {
+          setWaitingGame(false);
+          setWaitingMove(false);
+          await deleteGame(gameId);
+        }
+      }
+    }
   };
 
-  const getGameState = () => {
-    const winner = getWinner(boardState);
-    if (winner) {
-      return `Player ${winner} wins!`;
-    } else if (hasNoMoreMoves(boardState)) {
-      return `Draw!`;
+  const isGameEnd = () => {
+    return gameResult !== "U";
+  };
+
+  const getGameAnnouncement = () => {
+    if (!isGameEnd()) {
+      if (waitingGame) {
+        return "Waiting for a player...";
+      } else if (waitingMove) {
+        return `${
+          lastMove
+            ? `You have moved on ${
+                SQUARE_POSITIONS[lastMove.row_position][lastMove.col_position]
+              } square. `
+            : ""
+        }Opponent's turn!`;
+      } else {
+        return `${
+          lastMove
+            ? `Player ${opponentId} moves on ${
+                SQUARE_POSITIONS[lastMove.row_position][lastMove.col_position]
+              } square. `
+            : ""
+        }Your turn!`;
+      }
+    } else if (gameResult === "D") {
+      return "It's a draw!";
     } else {
-      return "Waiting for the other player...";
+      const winner = lastMove?.player_id as number;
+      return winner === playerId ? "You have won!" : "You have lost!";
     }
   };
 
   return (
     <main ref={gameRoomRef} aria-label="Game Room">
       <header>
-        <h2 aria-live="assertive" className="h2">{getGameState()}</h2>
+        <h2
+          id="game-announcer"
+          role="alert"
+          aria-live="assertive"
+          className="h2"
+        >
+          {getGameAnnouncement()}
+        </h2>
       </header>
-      <Board boardState={boardState} updateBoardState={updateBoardState} />
-      <QuitGameButton navigateTo={navigateTo} />
+      <Board
+        playerId={playerId}
+        gameId={gameId}
+        boardState={boardState}
+        isDisabled={waitingGame || waitingMove}
+        isFinished={gameResult !== "U"}
+      />
+      {isGameEnd() && (
+        <QuitGameButton handleOnClick={() => navigateTo("DASHBOARD")} />
+      )}
     </main>
   );
 };
 
-interface QuitGameButtonProps {
-  navigateTo: (appPage: AppPageType) => void;
-}
-const QuitGameButton = ({ navigateTo }: QuitGameButtonProps) => {
+const QuitGameButton = ({ handleOnClick }: ButtonProps) => {
   return (
     <button
       aria-label="Quit Game"
-      onClick={() => navigateTo("DASHBOARD")}
+      onClick={handleOnClick}
       className="quit-game-button"
     >
       <p aria-hidden="true" className="p1 quit-game-button-label">
@@ -89,7 +187,7 @@ const QuitGameButton = ({ navigateTo }: QuitGameButtonProps) => {
   );
 };
 
-const getWinner = (boardState: BoardStateType): SquareStateType => {
+const getGameResult = (boardState: BoardStateType): GameResultType => {
   const winningStates = [
     [
       [0, 0],
@@ -135,15 +233,19 @@ const getWinner = (boardState: BoardStateType): SquareStateType => {
 
   for (let i = 0; i < winningStates.length; i++) {
     const [[ai, aj], [bi, bj], [ci, cj]] = winningStates[i];
+    const comparator = boardState[ai][aj];
     if (
-      boardState[ai][aj] &&
-      boardState[ai][aj] === boardState[bi][bj] &&
-      boardState[ai][aj] === boardState[ci][cj]
+      comparator &&
+      comparator === boardState[bi][bj] &&
+      comparator === boardState[ci][cj]
     ) {
-      return boardState[ai][aj];
+      return comparator;
     }
   }
-  return "";
+
+  if (hasNoMoreMoves(boardState)) return "D";
+
+  return "U";
 };
 
 const hasNoMoreMoves = (boardState: BoardStateType) => {

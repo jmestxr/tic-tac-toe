@@ -14,12 +14,12 @@
   cursor: pointer;
 }
 
-.new-game-button {
+.play-game-button {
   color: var(--grey);
   background-color: var(--teal);
 }
 
-.join-game-button {
+.history-button {
   color: var(--teal);
   background-color: var(--grey);
 }
@@ -35,8 +35,6 @@
   }
   .game-button {
     flex-direction: column;
-  }
-  .game-button {
     min-width: 400px;
   }
 }

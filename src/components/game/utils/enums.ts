@@ -1,4 +1,4 @@
-enum AppPage {
+export enum AppPage {
   DASHBOARD,
   GAMEROOM
 }
@@ -14,10 +14,9 @@ export enum SquareState {
   "",
 }
 
-export type AppPageType = keyof typeof AppPage;
-
-export type PlayerType = keyof typeof Player;
-
-export type SquareStateType = keyof typeof SquareState;
-
-export type BoardStateType = (keyof typeof SquareState)[][];
+export enum GameResult {
+  "X", /* Player X wins */
+  "O", /* Player O wins */
+  "D", /* Draw */
+  "U" /* Unknown; game has not ended yet */
+}

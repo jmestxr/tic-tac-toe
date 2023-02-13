@@ -1,31 +1,43 @@
 .board {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.board-disabled {
+  opacity: 0.5;
+}
+.board-finished {
+  opacity: 1;
 }
 
 .board-row {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .square {
-    height: 150px;
-    width: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0.3rem;
-    background-color: var(--teal);
-    border: 5px solid var(--teal);
-    cursor: pointer;
+  height: 150px;
+  width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.3rem;
+  background-color: var(--teal);
+  border: 5px solid var(--teal);
+  cursor: pointer;
 }
 .square:hover {
-    opacity: 0.8;
+  opacity: 0.8;
+}
+.square-disabled {
+  cursor: default;
+}
+.square-disabled:hover {
+  opacity: 1;
 }
 
 .square-label {
-    color: var(--grey);
-    font-size: 6rem;
-    font-weight: var(--medium);
+  color: var(--grey);
+  font-size: 6rem;
+  font-weight: var(--medium);
 }
