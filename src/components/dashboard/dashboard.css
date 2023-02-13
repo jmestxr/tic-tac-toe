@@ -68,6 +68,14 @@
   #dashboard-nav {
     flex-direction: column;
   }
+  #play-game-button {
+    border-top-right-radius: 15px;
+    border-bottom-left-radius: 0;
+  }
+  #history-button {
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 15px;
+  }
   .game-button {
     flex-direction: column;
     min-width: 400px;

@@ -5,6 +5,8 @@ import {
   ButtonProps,
   GameResultType,
   PageProps,
+  PlayerType,
+  SquareStateType,
 } from "./utils/types";
 import { Board } from "./Board";
 import {
@@ -61,7 +63,7 @@ export const GameRoom = ({
         setTimeout(() => {
           setIsWaitingGame(false);
           startGame();
-        }, 2000);
+        }, 3500);
       }
     });
   }, []);
@@ -109,6 +111,10 @@ export const GameRoom = ({
 
       const isWaitingMove = await checkIsWaitingMove(gameId, playerId);
       setIsWaitingMove(isWaitingMove);
+
+      /* Update the last move on the board. */
+      const lastMove = await getLastMove(gameId);
+      if (lastMove) setLastMove(lastMove);
 
       /* Update the board state. */
       let latestBoardState = await getBoardState(gameId);
@@ -184,12 +190,7 @@ export const GameRoom = ({
       aria-live="assertive"
     >
       <header aria-atomic="true" aria-live="assertive">
-        <h2
-          id="game-announcer"
-          role="alert"
-          aria-live="assertive"
-          className="h2"
-        >
+        <h2 id="game-announcer" aria-live="assertive" className="h2">
           {getGameAnnouncement()}
         </h2>
       </header>
@@ -200,8 +201,102 @@ export const GameRoom = ({
         isDisabled={isWaitingGame || isWaitingMove || !isGameSessionExists}
         isFinished={gameResult !== "U"}
       />
-      <QuitGameButton handleOnClick={handleQuitGame} />
+      <div id="gameroom-buttons" aria-label="GameRoom Buttons">
+        <AnnounceBoardButton
+          boardState={boardState}
+          lastMove={lastMove}
+          playerId={playerId}
+        />
+        <QuitGameButton handleOnClick={handleQuitGame} />
+      </div>
     </main>
+  );
+};
+
+interface AnnounceBoardButtonProps {
+  boardState: BoardStateType;
+  lastMove: Record<string, number> | null;
+  playerId: number;
+}
+const AnnounceBoardButton = ({
+  boardState,
+  lastMove,
+  playerId,
+}: AnnounceBoardButtonProps) => {
+  const announceBoard = () => {
+    if (!lastMove) {
+      return invokeAnnouncer("No player has made a move yet.");
+    }
+
+    const { player_id, row_position, col_position } = lastMove;
+
+    let playerSymbol: SquareStateType;
+
+    let lastMoveSymbol = boardState[row_position][col_position];
+
+    if (player_id === playerId) {
+      playerSymbol = lastMoveSymbol;
+    } else if (lastMoveSymbol === "X") {
+      playerSymbol = "O";
+    } else {
+      playerSymbol = "X";
+    }
+
+    let announcement = "";
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        console.log(boardState);
+        const symbol = boardState[i][j];
+        const squarePosition = SQUARE_POSITIONS[i][j];
+        if (symbol === "") {
+          announcement += `${squarePosition} is empty. `;
+        } else if (symbol === playerSymbol) {
+          announcement += `${squarePosition} occupied by you. `;
+        } else {
+          announcement += `${squarePosition} occupied by opponent. `;
+        }
+      }
+    }
+
+    invokeAnnouncer(announcement);
+  };
+
+  const invokeAnnouncer = (announcement: string) => {
+    const announcer = document.createElement("div");
+    const announcerId = "speak-" + Date.now();
+    announcer.setAttribute("id", announcerId);
+    announcer.setAttribute("aria-live", "polite");
+    announcer.classList.add("visually-hidden");
+    document.body.appendChild(announcer);
+    window.setTimeout(function () {
+      announcer.innerHTML = announcement;
+    }, 100);
+
+    window.setTimeout(function () {
+      document.body.removeChild(announcer);
+    }, 1000);
+  };
+
+  return (
+    <button
+      aria-label="Announce Board"
+      onClick={announceBoard}
+      id="announce-board-button"
+      className="gameroom-button"
+    >
+      <p
+        id="announce-board-button-label"
+        aria-hidden="true"
+        className="p1 gameroom-button-label"
+      >
+        Announce Board
+      </p>
+      <img
+        aria-hidden="true"
+        src={require("../../assets/board-icon.png")}
+        className="gameroom-button-icon"
+      />
+    </button>
   );
 };
 
@@ -210,15 +305,20 @@ const QuitGameButton = ({ handleOnClick }: ButtonProps) => {
     <button
       aria-label="Quit Game"
       onClick={handleOnClick}
-      className="quit-game-button"
+      id="quit-game-button"
+      className="gameroom-button"
     >
-      <p aria-hidden="true" className="p1 quit-game-button-label">
+      <p
+        id="quit-game-button-label"
+        aria-hidden="true"
+        className="p1 gameroom-button-label"
+      >
         Quit Game
       </p>
       <img
         aria-hidden="true"
         src={require("../../assets/quit-game-icon.png")}
-        className="quit-game-icon"
+        className="gameroom-button-icon"
       />
     </button>
   );

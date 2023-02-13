@@ -1,44 +1,60 @@
-.quit-game-button {
-    position: sticky;
-    bottom: 5%;
-    left: 100%;
-    border: none;
-    height: 85px;
-    width: 85px;
-    border-radius: 50%;
-    background-color: var(--orange);
-    cursor: pointer;
-}
-.quit-game-button:hover {
-    opacity: 0.8
-}
-.quit-game-button:hover .quit-game-icon,
-.quit-game-button:focus .quit-game-icon {
-    visibility: hidden;
-}
-.quit-game-button:hover .quit-game-button-label,
-.quit-game-button:focus .quit-game-button-label {
-    visibility: visible;
+#gameroom-buttons {
+  position: sticky;
+  bottom: 5%;
+  float: right;
+  display: flex;
+  flex-direction: row;
 }
 
-.quit-game-icon {
-    height: 3rem;
-    width: auto;
+.gameroom-button {
+  margin: 0 0.25rem;
+  border: none;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.gameroom-button:hover {
+  opacity: 0.8;
+}
+.gameroom-button:hover .gameroom-button-icon,
+.gameroom-button:focus .gameroom-button-icon {
+  visibility: hidden;
+}
+.gameroom-button:hover .gameroom-button-label,
+.gameroom-button:focus .gameroom-button-label {
+  display: inline-block;
 }
 
-.quit-game-button-label {
-    position: absolute;
-    bottom: 5%;
-    visibility: hidden;
-    color: var(--grey);
-    font-weight: var(--bold);
+.gameroom-button-icon {
+  height: 3.5rem;
+  width: auto;
 }
 
+.gameroom-button-label {
+  display: none;
+  color: var(--grey);
+  font-weight: var(--bold);
+}
+
+#announce-board-button {
+  background-color: var(--teal);
+}
+
+#quit-game-button {
+  background-color: var(--orange);
+}
+
+#announce-board-button-label {
+  margin-top: 2.5rem;
+}
+#quit-game-button-label {
+  margin-top: 3rem;
+}
 
 /* ============================= RESPONSIVENESS ============================= */
 @media screen and (max-width: 992px) {
-    .quit-game-button {
-        margin-top: 2rem;
-    }
+  #gameroom-buttons {
+    margin-top: 2rem;
   }
-  
+}
