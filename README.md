@@ -1,8 +1,11 @@
 # accessible-tic-tac-toe
 An accessible tic-tac-toe game for sensory-impaired users.
 
+## Video Demo
+<hidden_url> 
+
 ## Steps to play accessible-tic-tac-toe on two browsers
-1. On both browsers, go to https://accessible-tic-tac-toe.herokuapp.com/.
+1. On both browsers, go to <hidden_url>.
 1. On both browsers, click on the orange ‘Start Now’ button to start a new player session. You will be navigated to the Dashboard.
 1. On browser 1, click on the blue ‘Play Game’ button to enter a Game Room. Repeat for browser 2. Assuming that no other game sessions are in progress, browser 1 will be automatically matched against browser 2 for the same game.
 1. During the middle of the game, the ‘Announce Board’ button (blue button on the bottom right) can be clicked to announce the current board state / previous moves made.
