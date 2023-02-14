@@ -63,7 +63,7 @@ export const GameRoom = ({
         setTimeout(() => {
           setIsWaitingGame(false);
           startGame();
-        }, 3500);
+        }, 4500);
       }
     });
   }, []);
